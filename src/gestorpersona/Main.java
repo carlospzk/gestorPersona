@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Date;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  *
@@ -25,8 +27,7 @@ public class Main {
 
         //ArrayList Personas
         ArrayList<Persona> personas = new ArrayList<Persona>();
-        //Solamente 1 ArrayList para dia, mes, año
-        ArrayList<Integer> fecha = new ArrayList<Integer>();
+        
 
 
 
@@ -47,19 +48,6 @@ public class Main {
 
             System.out.println("Ingrese la fecha de nacimiento de la persona: ");
             String fechaNacimiento = keyboard.next();
-            int day = Integer.parseInt(fechaNacimiento.substring(0, 2));
-            int month = Integer.parseInt(fechaNacimiento.substring(3, 5));
-            int year = Integer.parseInt(fechaNacimiento.substring(6, 10));
-
-            fecha.add(day);
-            fecha.add(month);
-            fecha.add(year);
-
-
-
-            
-
-
 
             int sexo;
             do {
@@ -98,12 +86,28 @@ public class Main {
                         System.out.println("Nombre: " + personas.get(i).getNombre());
                         System.out.println("Apellidos: " + personas.get(i).getApellidos());
                         System.out.println("Fecha de nacimiento: " + personas.get(i).getFechaNacimiento());
+                        
+                        // Calcular la edad con la fecha de nacimiento
+                        System.out.println("Edad: " + calcularEdad(personas.get(i).getFechaNacimiento()));
+                        
                         System.out.println("Sexo: " + personas.get(i).getSexo());
                     }
                     break;
 
                 case 2:
                     System.out.println("Mostrar informacion de las personas mayores de edad");
+                    for(int i = 0; i < personas.size(); i++) {
+                        if(isAdult(personas.get(i).getFechaNacimiento(), new Date())) {
+                            System.out.println("Nombre: " + personas.get(i).getNombre());
+                            System.out.println("Apellidos: " + personas.get(i).getApellidos());
+                            System.out.println("Fecha de nacimiento: " + personas.get(i).getFechaNacimiento());
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(personas.get(i).getFechaNacimiento());
+                            
+
+                            System.out.println("Sexo: " + personas.get(i).getSexo());
+                        }
+                    }
                     
 
 
@@ -112,6 +116,19 @@ public class Main {
                     
                 case 3:
                     System.out.println("Mostrar informacion de las personas menores de edad");
+                    for(int i = 0; i < personas.size(); i++) {
+                        if(!isAdult(personas.get(i).getFechaNacimiento(), new Date())) {
+                            System.out.println("Nombre: " + personas.get(i).getNombre());
+                            System.out.println("Apellidos: " + personas.get(i).getApellidos());
+                            System.out.println("Fecha de nacimiento: " + personas.get(i).getFechaNacimiento());
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(personas.get(i).getFechaNacimiento());
+                            
+
+                            System.out.println("Sexo: " + personas.get(i).getSexo());
+                        }
+                    }
+
                     break;
 
                 case 4:
@@ -121,7 +138,9 @@ public class Main {
                             System.out.println("Nombre: " + personas.get(i).getNombre());
                             System.out.println("Apellidos: " + personas.get(i).getApellidos());
                             System.out.println("Fecha de nacimiento: " + personas.get(i).getFechaNacimiento());
-                            System.out.println("Sexo: " + personas.get(i).getSexo());
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(personas.get(i).getFechaNacimiento());
+                            System.out.println("Sexo Masculino: " + personas.get(i).getSexo());
                         }
                     }
                     break;
@@ -133,7 +152,9 @@ public class Main {
                             System.out.println("Nombre: " + personas.get(i).getNombre());
                             System.out.println("Apellidos: " + personas.get(i).getApellidos());
                             System.out.println("Fecha de nacimiento: " + personas.get(i).getFechaNacimiento());
-                            System.out.println("Sexo: " + personas.get(i).getSexo());
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(personas.get(i).getFechaNacimiento());
+                            System.out.println("Sexo Femenino: " + personas.get(i).getSexo());
                         }
                     }
                     break;
@@ -152,6 +173,80 @@ public class Main {
 
         }
 
+        
+        //Validar fecha
+        static boolean isValidDate(int day, int month, int year) {
+            if(day < 1 || day > 31) {
+                return false;
+            }
+
+            if(month < 1 || month > 12) {
+                return false;
+            }
+
+            if(year < 1900 || year > 2021) {
+                return false;
+            }
+
+            return true;
+        }
+
+        //Validar año bisiesto
+
+        static boolean isLeapYear(int year) {
+            if(year % 4 == 0) {
+                if(year % 100 == 0) {
+                    if(year % 400 == 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        //Validar si es mayor de edad
+
+        static boolean isAdult(Date fechaNacimiento, Date now) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(fechaNacimiento);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            calendar.setTime(now);
+            int nowYear = calendar.get(Calendar.YEAR);
+            int nowMonth = calendar.get(Calendar.MONTH);
+            int nowDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+            if(nowYear - year > 18) {
+                return true;
+            } else if(nowYear - year == 18) {
+                if(nowMonth > month) {
+                    return true;
+                } else if(nowMonth == month) {
+                    if(nowDay >= day) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+
+        }
+
+        //Validar si es menor de edad
+
+
+
         //Formatear fecha
         static Date formatFecha(String fecha) {
             try {
@@ -166,6 +261,32 @@ public class Main {
 
         
         // TODO code application logic here
+    }
+
+    // Calcular la edad con la fecha de nacimiento
+    static int calcularEdad(Date fechaNacimiento) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fechaNacimiento);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        calendar.setTime(new Date());
+        int nowYear = calendar.get(Calendar.YEAR);
+        int nowMonth = calendar.get(Calendar.MONTH);
+        int nowDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        int edad = nowYear - year;
+
+        if(nowMonth < month) {
+            edad--;
+        } else if(nowMonth == month) {
+            if(nowDay < day) {
+                edad--;
+            }
+        }
+
+        return edad;
     }
     
 }
